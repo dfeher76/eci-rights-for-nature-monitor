@@ -116,6 +116,7 @@
       <button data-h="0" aria-pressed="true">All data</button>
     </div>
     <div class="chart" id="line-chart"></div>
+    <p class="foot" id="est-note" style="display:none">The dashed part of the line is estimated. The hours since the launch were interpolated between figures copied by hand from the EC website. Only the solid part comes from the hourly automatic collection.</p>
   </section>
 
   <section class="card">
@@ -193,12 +194,18 @@
     var bust = "?v=" + Date.now();
     return Promise.all([
       fetch("data/totals.csv" + bust).then(function (r) { if (!r.ok) throw new Error("totals.csv"); return r.text(); }),
-      fetch("data/countries.csv" + bust).then(function (r) { if (!r.ok) throw new Error("countries.csv"); return r.text(); })
+      fetch("data/countries.csv" + bust).then(function (r) { if (!r.ok) throw new Error("countries.csv"); return r.text(); }),
+      fetch("data/backfill_totals.csv" + bust).then(function (r) { return r.ok ? r.text() : ""; }).catch(function () { return ""; })
     ]).then(function (res) {
       var seen = {};
-      totals = parseCSV(res[0]).map(function (r) {
-        return { t: parseEc(r.ec_update), total: +r.total };
-      }).filter(function (r) { return isFinite(r.t) && isFinite(r.total); })
+      var real = parseCSV(res[0]).map(function (r) {
+        return { t: parseEc(r.ec_update), total: +r.total, est: false, kind: "measured" };
+      }).filter(function (r) { return isFinite(r.t) && isFinite(r.total); });
+      var firstReal = real.reduce(function (m, r) { return Math.min(m, r.t); }, Infinity);
+      var back = res[2] ? parseCSV(res[2]).map(function (r) {
+        return { t: parseEc(r.ec_update), total: +r.total, est: r.kind !== "measured", kind: r.kind };
+      }).filter(function (r) { return isFinite(r.t) && isFinite(r.total) && r.t < firstReal; }) : [];
+      totals = back.concat(real)
         .sort(function (a, b) { return a.t - b.t; })
         .filter(function (r) { if (seen[r.t]) return false; seen[r.t] = 1; return true; });
 
@@ -217,8 +224,8 @@
     if (totals.length < 2) return null;
     var last = totals[totals.length - 1], target = last.t - hours * 3600000, ref = null;
     for (var i = totals.length - 1; i >= 0; i--) { if (totals[i].t <= target) { ref = totals[i]; break; } }
-    if (!ref) return { gain: last.total - totals[0].total, partial: true, hours: (last.t - totals[0].t) / 3600000 };
-    return { gain: last.total - ref.total, partial: false };
+    if (!ref) return { gain: last.total - totals[0].total, partial: true, hours: (last.t - totals[0].t) / 3600000, est: totals[0].est };
+    return { gain: last.total - ref.total, partial: false, est: ref.est };
   }
   function renderHero() {
     var hero = document.getElementById("hero"), meta = document.getElementById("hero-meta"), tiles = document.getElementById("tiles");
@@ -239,7 +246,7 @@
       var g = gainSince(p[0]);
       if (!g) { tile(p[1], "n/a", "Collecting data"); return; }
       var v = (g.gain >= 0 ? "+" : "") + nf.format(g.gain);
-      tile(p[1], v, g.partial ? "Since monitoring began, " + Math.max(1, Math.round(g.hours)) + " h ago" : "Compared with " + p[1].toLowerCase().replace("last ", "") + " earlier");
+      tile(p[1], v, (g.partial ? "Since monitoring began, " + Math.max(1, Math.round(g.hours)) + " h ago" : "Compared with " + p[1].toLowerCase().replace("last ", "") + " earlier") + (g.est ? ", partly estimated" : ""));
     });
     var active = countries.filter(function (c) { return c.total > 0; }).length;
     tile("Countries with signatures", active + " of " + (countries.length || 27), "");
@@ -297,7 +304,21 @@
 
     var d = pts.map(function (p, i) { return (i ? "L" : "M") + X(p.t).toFixed(1) + " " + Y(p.total).toFixed(1); }).join(" ");
     el("path", { d: d + " L" + X(tMax).toFixed(1) + " " + (H - m.b) + " L" + X(tMin).toFixed(1) + " " + (H - m.b) + " Z", fill: "var(--series-1)", "fill-opacity": 0.10 }, svg);
-    el("path", { d: d, fill: "none", stroke: "var(--series-1)", "stroke-width": 2, "stroke-linejoin": "round", "stroke-linecap": "round" }, svg);
+    // consecutive segments of the same style are drawn as one path; dashed when either end is estimated
+    var runs = [], cur = null;
+    for (var si = 1; si < pts.length; si++) {
+      var est = pts[si - 1].est || pts[si].est;
+      if (!cur || cur.est !== est) { cur = { est: est, d: "M" + X(pts[si - 1].t).toFixed(1) + " " + Y(pts[si - 1].total).toFixed(1) }; runs.push(cur); }
+      cur.d += " L" + X(pts[si].t).toFixed(1) + " " + Y(pts[si].total).toFixed(1);
+    }
+    var hasEst = false;
+    runs.forEach(function (r) {
+      if (r.est) hasEst = true;
+      var a = { d: r.d, fill: "none", stroke: "var(--series-1)", "stroke-width": 2, "stroke-linejoin": "round", "stroke-linecap": "round" };
+      if (r.est) { a["stroke-dasharray"] = "5 4"; }
+      el("path", a, svg);
+    });
+    var legend = document.getElementById("est-note"); if (legend) legend.style.display = hasEst ? "block" : "none";
 
     var last = pts[pts.length - 1];
     el("circle", { cx: X(last.t), cy: Y(last.total), r: 4, fill: "var(--series-1)", stroke: "var(--surface-1)", "stroke-width": 2 }, svg);
@@ -317,7 +338,7 @@
       cross.setAttribute("x1", x); cross.setAttribute("x2", x); cross.setAttribute("visibility", "visible");
       dot.setAttribute("cx", x); dot.setAttribute("cy", y); dot.setAttribute("visibility", "visible");
       tip.textContent = "";
-      var l1 = document.createElement("div"); l1.textContent = fmtFull(p.t);
+      var l1 = document.createElement("div"); l1.textContent = fmtFull(p.t) + (p.est ? " (estimated)" : "");
       var l2 = document.createElement("div"); var key = document.createElement("span"); key.className = "key";
       var v = document.createElement("span"); v.className = "v"; v.textContent = nf.format(p.total);
       l2.appendChild(key); l2.appendChild(v);
