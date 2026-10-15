@@ -15,8 +15,10 @@
     --grid:           #e1e0d9;
     --baseline:       #c3c2b7;
     --border:         rgba(11,11,11,0.10);
-    --series-1:       #2a78d6;
-    --series-1-hover: #256abf;
+    --c1: #2a78d6; --c2: #eb6834; --c3: #1baf7a; --c4: #eda100;
+    --c5: #e87ba4; --c6: #008300; --c7: #6250d6; --c8: #e34948;
+    --shade1: #2a78d6; --shade2: #1c5cab; --shade3: #0d366b;
+    --hover: #256abf;
   }
   @media (prefers-color-scheme: dark) {
     :root:where(:not([data-theme="light"])) .viz-root {
@@ -28,13 +30,15 @@
       --grid:           #2c2c2a;
       --baseline:       #383835;
       --border:         rgba(255,255,255,0.10);
-      --series-1:       #3987e5;
-      --series-1-hover: #6da7ec;
+      --c1: #3987e5; --c2: #d95926; --c3: #199e70; --c4: #c98500;
+      --c5: #d55181; --c6: #008300; --c7: #9085e9; --c8: #e66767;
+      --shade1: #3987e5; --shade2: #6da7ec; --shade3: #9ec5f4;
+      --hover: #6da7ec;
     }
   }
   * { box-sizing: border-box; }
   html, body { margin: 0; }
-  body { background: var(--page, #f9f9f7); }
+  body { background: #f9f9f7; }
   .viz-root {
     background: var(--page);
     color: var(--text-primary);
@@ -42,18 +46,13 @@
     min-height: 100vh;
     padding: 24px 16px 48px;
   }
+  @media (prefers-color-scheme: dark) { body { background: #0d0d0d; } }
   .wrap { max-width: 960px; margin: 0 auto; }
   h1 { font-size: 20px; font-weight: 600; margin: 0 0 4px; }
   .sub { color: var(--text-secondary); font-size: 14px; margin: 0 0 20px; line-height: 1.45; }
-  .card {
-    background: var(--surface-1);
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    padding: 20px;
-    margin-bottom: 16px;
-  }
+  .card { background: var(--surface-1); border: 1px solid var(--border); border-radius: 12px; padding: 20px; margin-bottom: 16px; }
   .card h2 { font-size: 15px; font-weight: 600; margin: 0 0 2px; }
-  .card .hint { color: var(--text-secondary); font-size: 13px; margin: 0 0 12px; }
+  .card .hint { color: var(--text-secondary); font-size: 13px; margin: 0 0 12px; line-height: 1.45; }
   .hero-label { color: var(--text-secondary); font-size: 14px; margin: 0 0 4px; }
   .hero { font-size: 56px; line-height: 1.05; font-weight: 600; letter-spacing: -0.01em; }
   .hero-meta { color: var(--text-secondary); font-size: 13px; margin-top: 8px; }
@@ -62,14 +61,39 @@
   .tile .label { color: var(--text-secondary); font-size: 13px; }
   .tile .value { font-size: 24px; font-weight: 600; margin-top: 2px; }
   .tile .note { color: var(--text-muted); font-size: 12px; margin-top: 2px; }
-  .filters { display: flex; gap: 6px; margin: 0 0 12px; flex-wrap: wrap; }
-  .filters button {
+
+  .frow { display: flex; flex-wrap: wrap; gap: 8px 20px; align-items: center; margin: 0 0 12px; }
+  .fgroup { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+  .flabel { color: var(--text-secondary); font-size: 13px; }
+  .seg { display: flex; gap: 6px; flex-wrap: wrap; }
+  .seg button, .mini {
     font: inherit; font-size: 13px; color: var(--text-secondary);
     background: transparent; border: 1px solid var(--border);
     border-radius: 8px; padding: 6px 12px; cursor: pointer;
   }
-  .filters button:hover { background: var(--grid); }
-  .filters button[aria-pressed="true"] { color: var(--text-primary); border-color: var(--text-secondary); font-weight: 600; }
+  .seg button:hover, .mini:hover { background: var(--grid); }
+  .seg button[aria-pressed="true"] { color: var(--text-primary); border-color: var(--text-secondary); font-weight: 600; }
+  .check { display: inline-flex; align-items: center; gap: 6px; font-size: 13px; color: var(--text-primary); cursor: pointer; }
+  .check input { width: 16px; height: 16px; margin: 0; accent-color: var(--c1); cursor: pointer; }
+  .check sup { color: var(--text-secondary); }
+
+  .legend { display: flex; flex-wrap: wrap; gap: 6px 16px; font-size: 12px; color: var(--text-secondary); margin: 0 0 8px; min-height: 0; }
+  .legend:empty { display: none; }
+  .legend .it { display: inline-flex; align-items: center; gap: 6px; }
+  .legend svg { display: block; }
+
+  .chips { display: flex; flex-wrap: wrap; gap: 6px; margin: 0 0 12px; }
+  .chip {
+    font: inherit; font-size: 12px; display: inline-flex; align-items: center; gap: 6px;
+    background: transparent; color: var(--text-primary); border: 1px solid var(--border);
+    border-radius: 999px; padding: 4px 10px 4px 8px; cursor: pointer;
+  }
+  .chip svg { display: block; }
+  .chip[aria-pressed="false"] { color: var(--text-muted); opacity: 0.55; }
+  .chip[aria-pressed="false"] svg { filter: grayscale(1); }
+  .chip:hover { background: var(--grid); }
+  .chips .sep { width: 1px; background: var(--border); margin: 0 4px; }
+
   .chart { position: relative; width: 100%; }
   .chart svg { display: block; width: 100%; height: auto; overflow: visible; }
   .chart text { font-family: inherit; }
@@ -78,19 +102,27 @@
     background: var(--surface-1); border: 1px solid var(--border);
     box-shadow: 0 4px 16px rgba(0,0,0,0.12);
     border-radius: 8px; padding: 8px 10px; font-size: 12px;
-    color: var(--text-secondary); white-space: nowrap; display: none;
+    color: var(--text-secondary); white-space: nowrap; display: none; line-height: 1.5;
   }
   .tip .v { color: var(--text-primary); font-size: 15px; font-weight: 600; }
-  .tip .key { display: inline-block; width: 12px; height: 2px; background: var(--series-1); vertical-align: middle; margin-right: 6px; }
+  .tip .mut { color: var(--text-muted); }
+  .tip .row { display: flex; align-items: center; gap: 8px; }
+  .tip .row .n { flex: 1; }
+  .tip .row.hi { color: var(--text-primary); font-weight: 600; }
+  .tip .key { display: inline-block; width: 14px; height: 2px; flex: none; }
+  .chart .tip svg { width: 14px; height: 6px; flex: none; }
   .empty { color: var(--text-secondary); font-size: 14px; padding: 48px 0; text-align: center; }
   details { margin-top: 12px; }
   summary { cursor: pointer; color: var(--text-secondary); font-size: 13px; }
+  .tablewrap { overflow-x: auto; }
   table { border-collapse: collapse; width: 100%; font-size: 13px; margin-top: 8px; }
-  th, td { text-align: left; padding: 6px 8px; border-bottom: 1px solid var(--grid); }
+  th, td { text-align: left; padding: 6px 8px; border-bottom: 1px solid var(--grid); white-space: nowrap; }
   th { color: var(--text-secondary); font-weight: 600; }
   td.num, th.num { text-align: right; font-variant-numeric: tabular-nums; }
-  .foot { color: var(--text-muted); font-size: 12px; line-height: 1.5; margin-top: 8px; }
+  tr.total td { font-weight: 600; border-top: 1px solid var(--baseline); }
+  .foot { color: var(--text-muted); font-size: 12px; line-height: 1.5; margin: 10px 0 0; }
   .foot a { color: var(--text-secondary); }
+  .foot.page { margin-top: 8px; }
   .err { color: var(--text-primary); }
 </style>
 </head>
@@ -109,27 +141,65 @@
 
   <section class="card">
     <h2>Development over time</h2>
-    <p class="hint">Total online signatures at each update of the EC counter. The vertical axis is fitted to the range of the data.</p>
-    <div class="filters" id="range" role="group" aria-label="Time range">
-      <button data-h="24" aria-pressed="false">Last 24 hours</button>
-      <button data-h="168" aria-pressed="false">Last 7 days</button>
-      <button data-h="0" aria-pressed="true">All data</button>
+    <p class="hint">Total online signatures, shown at the end of each period. The vertical axis is fitted to the range of the data. Time range and breakdown also apply to the country chart below.</p>
+    <div class="frow">
+      <div class="fgroup"><span class="flabel">Time range</span>
+        <div class="seg" id="range" role="group" aria-label="Time range">
+          <button data-v="24" aria-pressed="false">Last 24 hours</button>
+          <button data-v="168" aria-pressed="false">Last 7 days</button>
+          <button data-v="720" aria-pressed="false">Last 30 days</button>
+          <button data-v="0" aria-pressed="true">All data</button>
+        </div>
+      </div>
+      <div class="fgroup"><span class="flabel">Breakdown</span>
+        <div class="seg" id="gran" role="group" aria-label="Breakdown">
+          <button data-v="hour" aria-pressed="true">Hourly</button>
+          <button data-v="day" aria-pressed="false">Daily</button>
+          <button data-v="week" aria-pressed="false">Weekly</button>
+          <button data-v="month" aria-pressed="false">Monthly</button>
+        </div>
+      </div>
+      <label class="check"><input type="checkbox" id="exp"> Show expected curve</label>
     </div>
+    <div class="legend" id="line-legend"></div>
     <div class="chart" id="line-chart"></div>
     <p class="foot" id="est-note" style="display:none">The dashed part of the line is estimated. The hours since the launch were interpolated between figures copied by hand from the EC website. Only the solid part comes from the hourly automatic collection.</p>
+    <p class="foot" id="exp-note" style="display:none">Expected curve: the cumulative online signatures planned in the Phase B communications strategy, with 10,000 at the end of day one, 15,000 at the end of day two and the monthly cumulative targets after that, connected by straight lines.</p>
+  </section>
+
+  <section class="card">
+    <h2>Development by country</h2>
+    <p class="hint">Online signatures per member state over time. Click a country to switch it on or off. The vertical axis always fits the highest selected value, so switching off a large country shows the smaller ones in more detail.</p>
+    <div class="chips" id="chips"></div>
+    <div class="chart" id="country-chart"></div>
+    <p class="foot" id="cest-note" style="display:none">Faded line sections are estimated, see the note on the chart above. Countries that share a colour are told apart by the line style: solid, dashed or dotted.</p>
   </section>
 
   <section class="card">
     <h2>Signatures by country</h2>
-    <p class="hint">Online signatures per member state at the latest update, ordered by size.</p>
+    <p class="hint">Online signatures per member state at the latest update.</p>
+    <div class="frow">
+      <label class="check"><input type="checkbox" id="thr"> Threshold<sup>1</sup></label>
+      <label class="check"><input type="checkbox" id="tgt"> Target<sup>2</sup></label>
+      <div class="fgroup" id="scale-group" style="display:none"><span class="flabel">Bar length</span>
+        <div class="seg" id="scale" role="group" aria-label="Bar length">
+          <button data-v="rel" aria-pressed="true">Relative to goal</button>
+          <button data-v="abs" aria-pressed="false">Absolute</button>
+        </div>
+      </div>
+    </div>
+    <div class="legend" id="bar-legend"></div>
     <div class="chart" id="bar-chart"></div>
     <details>
       <summary>Show as table</summary>
-      <table id="country-table"></table>
+      <div class="tablewrap"><table id="country-table"></table></div>
     </details>
+    <p class="foot"><sup>1</sup> Threshold: the minimum number of statements of support required in each member state, as published by the European Commission in the register of the initiative.</p>
+    <p class="foot"><sup>2</sup> Target: 1,100,000 divided by the total number of people with voting rights in the European Parliament elections in the EU, multiplied by the number of such people in the respective country. This spreads the campaign goal of 1.1 million signatures in proportion to the electorate. The figures are the numbers of people eligible to vote in the 2024 European Parliament elections from the official <a href="https://ec.europa.eu/eurostat/databrowser/view/demo_popep/default/table?lang=en">Eurostat table demo_popep</a>, last updated on 2 August 2024, about <span id="voters-total">358</span> million in total. Total population would be used where these figures are not available, which is not the case for any member state. For Germany, Eurostat counts about 61.9 million, while the national authority states up to 64.9 million because it also includes EU citizens who still have to register to vote.</p>
+    <p class="foot" id="scale-note" style="display:none">In the relative view, each bar is as long as the larger of its goals, so the filled part shows the progress towards the goal. Use the absolute view to compare the numbers between countries.</p>
   </section>
 
-  <p class="foot">
+  <p class="foot page">
     Source: <a href="https://citizens-initiative.europa.eu/initiatives/details/2026/000006_en">European Commission, official register of the initiative</a>.
     These are online signatures as reported by the EC collection system. They have not yet been verified by the national authorities, and paper signatures are not included.
     Times are shown as published by the EC, in Brussels time.
@@ -141,20 +211,70 @@
 (function () {
   "use strict";
 
+  /* ===================== REFERENCE DATA ===================== */
   var NAMES = {AT:"Austria",BE:"Belgium",BG:"Bulgaria",HR:"Croatia",CY:"Cyprus",CZ:"Czechia",DK:"Denmark",EE:"Estonia",FI:"Finland",FR:"France",DE:"Germany",GR:"Greece",HU:"Hungary",IE:"Ireland",IT:"Italy",LV:"Latvia",LT:"Lithuania",LU:"Luxembourg",MT:"Malta",NL:"Netherlands",PL:"Poland",PT:"Portugal",RO:"Romania",SK:"Slovakia",SI:"Slovenia",ES:"Spain",SE:"Sweden"};
+  // code: [national threshold (EC register), people eligible to vote in the 2024 EP elections (Eurostat demo_popep)]
+  var REF = {
+    AT:[13395,6372204], BE:[14805,8537902], BG:[11985,6138178], HR:[8460,3734780], CY:[4230,684893],
+    CZ:[14805,8448475], DK:[9870,4525302], EE:[4935,980010], FI:[9870,4546589], FR:[55695,50693220],
+    DE:[67680,61941751], GR:[14805,9809353], HU:[14805,7803555], IE:[9165,3558051], IT:[53580,47340098],
+    LV:[5640,1541102], LT:[7755,2819567], LU:[4230,489669], MT:[4230,370184], NL:[20445,13542363],
+    PL:[36660,32148844], PT:[14805,10830572], RO:[23265,18976027], SK:[9870,4390400], SI:[5640,1689465],
+    ES:[41595,38050286], SE:[14805,7942272]
+  };
+  var TARGET_TOTAL = 1100000;
+  // expected cumulative online signatures (Phase B communications strategy, month ends at 00:00 on the 13th)
+  var EXPECTED_RAW = [
+    ["13/10/2026 00:00", 0], ["14/10/2026 00:00", 10000], ["15/10/2026 00:00", 15000],
+    ["13/11/2026 00:00", 130000], ["13/12/2026 00:00", 195000], ["13/01/2027 00:00", 230000],
+    ["13/02/2027 00:00", 285000], ["13/03/2027 00:00", 345000], ["13/04/2027 00:00", 430000],
+    ["13/05/2027 00:00", 520000], ["13/06/2027 00:00", 620000], ["13/07/2027 00:00", 715000],
+    ["13/08/2027 00:00", 775000], ["13/09/2027 00:00", 865000], ["13/10/2027 00:00", 1100000]
+  ];
+  /* ========================================================== */
+
   var MONTHS = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
   var NS = "http://www.w3.org/2000/svg";
+  var DAY = 86400000, HOUR = 3600000;
   var nf = new Intl.NumberFormat("en-GB");
+  var DASHES = ["", "7 4", "2 3"];
 
-  var totals = [];     // {t, total}
-  var countries = [];  // {code, name, total}
-  var rangeHours = 0;
+  var VOTERS_TOTAL = Object.keys(REF).reduce(function (s, c) { return s + REF[c][1]; }, 0);
+  function thrOf(c) { return REF[c] ? REF[c][0] : null; }
+  function tgtOf(c) { return REF[c] ? Math.round(TARGET_TOTAL * REF[c][1] / VOTERS_TOTAL) : null; }
 
+  var EXPECTED = EXPECTED_RAW.map(function (p) { return { t: parseEc(p[0]), v: p[1] }; });
+  function expectedAt(t) {
+    if (t <= EXPECTED[0].t) return EXPECTED[0].v;
+    for (var i = 1; i < EXPECTED.length; i++) {
+      if (t <= EXPECTED[i].t) {
+        var a = EXPECTED[i - 1], b = EXPECTED[i];
+        return a.v + (b.v - a.v) * (t - a.t) / (b.t - a.t);
+      }
+    }
+    return EXPECTED[EXPECTED.length - 1].v;
+  }
+
+  var CODES = Object.keys(NAMES).sort(function (a, b) { return NAMES[a].localeCompare(NAMES[b]); });
+  var STYLE = {};
+  CODES.forEach(function (c, i) { STYLE[c] = { color: "var(--c" + (i % 8 + 1) + ")", dash: DASHES[Math.floor(i / 8)] }; });
+
+  var totals = [];      // {t, total, est}
+  var snaps = [];       // {t, est, by:{code:total}}
+  var countries = [];   // latest {code, name, total}
+  var state = { range: 0, gran: "hour", expected: false, thr: false, tgt: false, rel: true, sel: {} };
+  CODES.forEach(function (c) { state.sel[c] = true; });
+
+  /* ---------- helpers ---------- */
   function el(name, attrs, parent) {
     var n = document.createElementNS(NS, name);
     for (var k in attrs) n.setAttribute(k, attrs[k]);
     if (parent) parent.appendChild(n);
     return n;
+  }
+  function div(cls, text, parent) {
+    var d = document.createElement("div"); if (cls) d.className = cls; if (text != null) d.textContent = text;
+    if (parent) parent.appendChild(d); return d;
   }
   function parseCSV(text) {
     var lines = text.trim().split(/\r?\n/);
@@ -175,12 +295,13 @@
   function fmtTime(t) { var d = new Date(t); return pad(d.getUTCHours()) + ":" + pad(d.getUTCMinutes()); }
   function fmtFull(t) { return fmtDay(t) + ", " + fmtTime(t); }
   function compact(n) {
-    if (n >= 1e6) return (n / 1e6).toFixed(n % 1e6 ? 1 : 0) + "M";
+    if (n >= 1e6) return (n / 1e6).toFixed(n % 1e6 ? 1 : 0).replace(/\.0$/, "") + "M";
     if (n >= 1e3) return (n / 1e3).toFixed(n % 1e3 ? 1 : 0).replace(/\.0$/, "") + "K";
     return String(n);
   }
+  function pct(x) { if (!isFinite(x)) return "n/a"; if (x > 0 && x < 0.1) return "<0.1%"; return x.toFixed(1) + "%"; }
   function niceTicks(min, max, n) {
-    if (max === min) { max = min + 1; }
+    if (max <= min) max = min + 1;
     var span = max - min, step = Math.pow(10, Math.floor(Math.log10(span / n)));
     var err = (span / n) / step;
     step *= err >= 7.5 ? 10 : err >= 3.5 ? 5 : err >= 1.5 ? 2 : 1;
@@ -188,43 +309,94 @@
     for (var v = lo; v <= hi + step / 2; v += step) out.push(v);
     return out;
   }
+  function message(host, text) { host.textContent = ""; div("empty", text, host); }
 
-  // ---------- data loading ----------
+  /* ---------- range and breakdown ---------- */
+  function inRange(arr) {
+    if (!state.range || !arr.length) return arr;
+    var from = arr[arr.length - 1].t - state.range * HOUR;
+    return arr.filter(function (p) { return p.t >= from; });
+  }
+  function bucketKey(t) {
+    var d = Math.floor(t / DAY);
+    switch (state.gran) {
+      case "hour": return Math.floor(t / HOUR);
+      case "day": return d;
+      case "week": return Math.floor((d + 3) / 7);
+      default: var x = new Date(t); return x.getUTCFullYear() * 12 + x.getUTCMonth();
+    }
+  }
+  function bucketed(arr) {
+    var out = [], last = null;
+    arr.forEach(function (p) {
+      var k = bucketKey(p.t);
+      if (k === last) out[out.length - 1] = p; else { out.push(p); last = k; }
+    });
+    return out;
+  }
+  function periodLabel(t) {
+    var d = Math.floor(t / DAY), x = new Date(t);
+    switch (state.gran) {
+      case "hour": return fmtFull(t);
+      case "day": return fmtDay(t) + " " + x.getUTCFullYear();
+      case "week": return "Week of " + fmtDay((d - ((d + 3) % 7)) * DAY);
+      default: return MONTHS[x.getUTCMonth()] + " " + x.getUTCFullYear();
+    }
+  }
+
+  /* ---------- data loading ---------- */
+  function fetchText(name, optional) {
+    return fetch("data/" + name + "?v=" + Date.now()).then(function (r) {
+      if (!r.ok) { if (optional) return ""; throw new Error(name); }
+      return r.text();
+    }).catch(function (e) { if (optional) return ""; throw e; });
+  }
+  function groupSnaps(rows, est) {
+    var m = {};
+    rows.forEach(function (r) {
+      if (!isFinite(r.t) || !isFinite(r.total) || !r.code) return;
+      var s = m[r.t] || (m[r.t] = { t: r.t, est: est(r), by: {} });
+      s.by[r.code] = r.total;
+    });
+    return Object.keys(m).map(function (k) { return m[k]; }).sort(function (a, b) { return a.t - b.t; });
+  }
   function load() {
-    var bust = "?v=" + Date.now();
     return Promise.all([
-      fetch("data/totals.csv" + bust).then(function (r) { if (!r.ok) throw new Error("totals.csv"); return r.text(); }),
-      fetch("data/countries.csv" + bust).then(function (r) { if (!r.ok) throw new Error("countries.csv"); return r.text(); }),
-      fetch("data/backfill_totals.csv" + bust).then(function (r) { return r.ok ? r.text() : ""; }).catch(function () { return ""; })
+      fetchText("totals.csv"), fetchText("countries.csv"),
+      fetchText("backfill_totals.csv", true), fetchText("backfill_countries.csv", true)
     ]).then(function (res) {
       var seen = {};
       var real = parseCSV(res[0]).map(function (r) {
-        return { t: parseEc(r.ec_update), total: +r.total, est: false, kind: "measured" };
+        return { t: parseEc(r.ec_update), total: +r.total, est: false };
       }).filter(function (r) { return isFinite(r.t) && isFinite(r.total); });
       var firstReal = real.reduce(function (m, r) { return Math.min(m, r.t); }, Infinity);
       var back = res[2] ? parseCSV(res[2]).map(function (r) {
-        return { t: parseEc(r.ec_update), total: +r.total, est: r.kind !== "measured", kind: r.kind };
+        return { t: parseEc(r.ec_update), total: +r.total, est: r.kind !== "measured" };
       }).filter(function (r) { return isFinite(r.t) && isFinite(r.total) && r.t < firstReal; }) : [];
-      totals = back.concat(real)
-        .sort(function (a, b) { return a.t - b.t; })
+      totals = back.concat(real).sort(function (a, b) { return a.t - b.t; })
         .filter(function (r) { if (seen[r.t]) return false; seen[r.t] = 1; return true; });
 
-      var rows = parseCSV(res[1]).map(function (r) {
-        return { t: parseEc(r.ec_update), code: r.country, total: +r.total };
-      }).filter(function (r) { return isFinite(r.t); });
-      var latest = rows.reduce(function (m, r) { return Math.max(m, r.t); }, 0);
-      countries = rows.filter(function (r) { return r.t === latest; }).map(function (r) {
-        return { code: r.code, name: NAMES[r.code] || r.code, total: r.total };
+      var realRows = parseCSV(res[1]).map(function (r) { return { t: parseEc(r.ec_update), code: r.country, total: +r.total }; });
+      var realSnaps = groupSnaps(realRows, function () { return false; });
+      var firstSnap = realSnaps.length ? realSnaps[0].t : Infinity;
+      var backRows = res[3] ? parseCSV(res[3]).map(function (r) {
+        return { t: parseEc(r.ec_update), code: r.country, total: +r.total, kind: r.kind };
+      }).filter(function (r) { return r.t < firstSnap; }) : [];
+      snaps = groupSnaps(backRows, function (r) { return r.kind !== "measured"; }).concat(realSnaps);
+
+      var latest = snaps.length ? snaps[snaps.length - 1].by : {};
+      countries = Object.keys(latest).map(function (c) {
+        return { code: c, name: NAMES[c] || c, total: latest[c] };
       }).sort(function (a, b) { return b.total - a.total; });
     });
   }
 
-  // ---------- hero & tiles ----------
+  /* ---------- hero & tiles ---------- */
   function gainSince(hours) {
     if (totals.length < 2) return null;
-    var last = totals[totals.length - 1], target = last.t - hours * 3600000, ref = null;
+    var last = totals[totals.length - 1], target = last.t - hours * HOUR, ref = null;
     for (var i = totals.length - 1; i >= 0; i--) { if (totals[i].t <= target) { ref = totals[i]; break; } }
-    if (!ref) return { gain: last.total - totals[0].total, partial: true, hours: (last.t - totals[0].t) / 3600000, est: totals[0].est };
+    if (!ref) return { gain: last.total - totals[0].total, partial: true, hours: (last.t - totals[0].t) / HOUR, est: totals[0].est };
     return { gain: last.total - ref.total, partial: false, est: ref.est };
   }
   function renderHero() {
@@ -234,13 +406,9 @@
     var last = totals[totals.length - 1];
     hero.textContent = nf.format(last.total);
     meta.textContent = "Last update of the EC counter: " + fmtFull(last.t) + " (Brussels time)";
-
     function tile(label, value, note) {
-      var d = document.createElement("div"); d.className = "tile";
-      var a = document.createElement("div"); a.className = "label"; a.textContent = label;
-      var b = document.createElement("div"); b.className = "value"; b.textContent = value;
-      var c = document.createElement("div"); c.className = "note"; c.textContent = note || "";
-      d.appendChild(a); d.appendChild(b); d.appendChild(c); tiles.appendChild(d);
+      var d = div("tile", null, tiles);
+      div("label", label, d); div("value", value, d); div("note", note || "", d);
     }
     [[24, "Last 24 hours"], [168, "Last 7 days"]].forEach(function (p) {
       var g = gainSince(p[0]);
@@ -250,104 +418,143 @@
     });
     var active = countries.filter(function (c) { return c.total > 0; }).length;
     tile("Countries with signatures", active + " of " + (countries.length || 27), "");
-    if (countries.length) {
-      var top = countries[0];
-      tile("Largest contribution", top.name, nf.format(top.total) + " signatures");
-    }
+    if (countries.length) tile("Largest contribution", countries[0].name, nf.format(countries[0].total) + " signatures");
   }
 
-  // ---------- line chart ----------
-  function renderLine() {
-    var host = document.getElementById("line-chart");
-    host.textContent = "";
-    var pts = totals;
-    if (rangeHours > 0 && totals.length) {
-      var from = totals[totals.length - 1].t - rangeHours * 3600000;
-      pts = totals.filter(function (p) { return p.t >= from; });
-    }
-    if (pts.length < 2) {
-      var e = document.createElement("div"); e.className = "empty";
-      e.textContent = totals.length < 2 ? "The curve builds up as data is collected, one point per hour." : "Not enough data in this time range yet.";
-      host.appendChild(e); return;
-    }
-    var W = Math.max(host.clientWidth, 300), H = W < 520 ? 260 : 320;
-    var m = { l: 52, r: 64, t: 14, b: 30 };
-    var svg = el("svg", { viewBox: "0 0 " + W + " " + H, role: "img", tabindex: "0", "aria-label": "Line chart of total online signatures over time" }, host);
-    var tMin = pts[0].t, tMax = pts[pts.length - 1].t;
-    var vMin = Math.min.apply(null, pts.map(function (p) { return p.total; }));
-    var vMax = Math.max.apply(null, pts.map(function (p) { return p.total; }));
-    var yt = niceTicks(vMin, vMax, 4), yLo = yt[0], yHi = yt[yt.length - 1];
+  /* ---------- shared chart parts ---------- */
+  function drawTimeAxis(svg, W, H, m, tMin, tMax) {
+    var span = tMax - tMin, xt = [];
     function X(t) { return m.l + (t - tMin) / (tMax - tMin) * (W - m.l - m.r); }
-    function Y(v) { return m.t + (1 - (v - yLo) / (yHi - yLo)) * (H - m.t - m.b); }
-
-    yt.forEach(function (v) {
+    var anchor = "middle";
+    if (span > 120 * DAY) {
+      var d0 = new Date(tMin), y = d0.getUTCFullYear(), mo = d0.getUTCMonth() + 1, list = [];
+      for (;;) { var t = Date.UTC(y, mo, 1); if (t > tMax) break; list.push(t); mo++; if (mo > 11) { mo = 0; y++; } }
+      var stride = Math.max(1, Math.ceil(list.length / 6));
+      list.forEach(function (t, i) { if (i % stride === 0) { var q = new Date(t); xt.push({ t: t, label: MONTHS[q.getUTCMonth()] + " " + q.getUTCFullYear() }); } });
+    } else if (span > 3 * DAY) {
+      var s0 = new Date(tMin), t0 = Date.UTC(s0.getUTCFullYear(), s0.getUTCMonth(), s0.getUTCDate()) + DAY;
+      var days = Math.floor((tMax - t0) / DAY) + 1, st = Math.max(1, Math.ceil(days / 6));
+      for (var t2 = t0, i = 0; t2 <= tMax; t2 += DAY, i++) if (i % st === 0) xt.push({ t: t2, label: fmtDay(t2) });
+    } else {
+      anchor = "edge";
+      for (var k = 0; k <= 4; k++) { var tt = tMin + span * k / 4; xt.push({ t: tt, label: span > DAY ? fmtFull(tt) : fmtTime(tt) }); }
+    }
+    el("line", { x1: m.l, x2: W - m.r, y1: H - m.b, y2: H - m.b, stroke: "var(--baseline)", "stroke-width": 1 }, svg);
+    xt.forEach(function (p, idx) {
+      var a = anchor === "edge" ? (idx === 0 ? "start" : idx === xt.length - 1 ? "end" : "middle") : "middle";
+      var t = el("text", { x: X(p.t), y: H - m.b + 18, "text-anchor": a, "font-size": 12, fill: "var(--text-muted)" }, svg);
+      t.textContent = p.label;
+    });
+    return X;
+  }
+  function drawYGrid(svg, W, m, Y, ticks) {
+    ticks.forEach(function (v) {
       el("line", { x1: m.l, x2: W - m.r, y1: Y(v), y2: Y(v), stroke: "var(--grid)", "stroke-width": 1 }, svg);
       var t = el("text", { x: m.l - 8, y: Y(v) + 4, "text-anchor": "end", "font-size": 12, fill: "var(--text-muted)" }, svg);
       t.textContent = compact(v);
     });
-    el("line", { x1: m.l, x2: W - m.r, y1: H - m.b, y2: H - m.b, stroke: "var(--baseline)", "stroke-width": 1 }, svg);
-
-    // x ticks
-    var xt = [], span = tMax - tMin, DAY = 86400000;
-    if (span > 3 * DAY) {
-      var d0 = new Date(tMin); var t0 = Date.UTC(d0.getUTCFullYear(), d0.getUTCMonth(), d0.getUTCDate()) + DAY;
-      var days = Math.floor((tMax - t0) / DAY) + 1, stride = Math.max(1, Math.ceil(days / 6));
-      for (var t = t0, i = 0; t <= tMax; t += DAY, i++) if (i % stride === 0) xt.push({ t: t, label: fmtDay(t) });
-    } else {
-      for (var k = 0; k <= 4; k++) { var tt = tMin + span * k / 4; xt.push({ t: tt, label: span > DAY ? fmtFull(tt) : fmtTime(tt) }); }
+  }
+  function placeTip(tip, host, svg, W, x, y) {
+    var scale = svg.getBoundingClientRect().width / W, tw = tip.offsetWidth, th = tip.offsetHeight;
+    var left = x * scale + 12; if (left + tw > host.clientWidth) left = x * scale - tw - 12;
+    var top = y * scale - 20; top = Math.min(top, svg.getBoundingClientRect().height - th);
+    tip.style.left = Math.max(0, left) + "px"; tip.style.top = Math.max(0, top) + "px";
+  }
+  function legendItem(parent, svgInner, text) {
+    var it = div("it", null, parent);
+    var s = el("svg", { width: 22, height: 10, viewBox: "0 0 22 10" }, it);
+    svgInner(s);
+    var t = document.createElement("span"); t.textContent = text; it.appendChild(t);
+  }
+  function runsOf(pts, X, Y, val) {
+    // consecutive segments of the same style (estimated or not) as paths
+    var runs = [], cur = null;
+    for (var i = 1; i < pts.length; i++) {
+      var est = !!(pts[i - 1].est || pts[i].est);
+      if (!cur || cur.est !== est) { cur = { est: est, d: "M" + X(pts[i - 1].t).toFixed(1) + " " + Y(val(pts[i - 1])).toFixed(1) }; runs.push(cur); }
+      cur.d += " L" + X(pts[i].t).toFixed(1) + " " + Y(val(pts[i])).toFixed(1);
     }
-    xt.forEach(function (p, idx) {
-      var anchor = (!(span > 3 * DAY) && idx === 0) ? "start" : (!(span > 3 * DAY) && idx === xt.length - 1) ? "end" : "middle";
-      var t = el("text", { x: X(p.t), y: H - m.b + 18, "text-anchor": anchor, "font-size": 12, fill: "var(--text-muted)" }, svg);
-      t.textContent = p.label;
-    });
+    return runs;
+  }
+
+  /* ---------- chart 1: total over time ---------- */
+  function renderLine() {
+    var host = document.getElementById("line-chart"), legend = document.getElementById("line-legend");
+    host.textContent = ""; legend.textContent = "";
+    document.getElementById("exp-note").style.display = state.expected ? "block" : "none";
+    var pts = bucketed(inRange(totals));
+    if (pts.length < 2) {
+      message(host, totals.length < 2 ? "The curve builds up as data is collected, one point per hour." : "Not enough data for this time range and breakdown yet.");
+      document.getElementById("est-note").style.display = "none"; return;
+    }
+    var W = Math.max(host.clientWidth, 300), H = W < 520 ? 260 : 320, m = { l: 52, r: 76, t: 14, b: 30 };
+    var tMin = pts[0].t, tMax = pts[pts.length - 1].t;
+    var exp = null;
+    if (state.expected) {
+      var times = [tMin].concat(EXPECTED.map(function (e) { return e.t; }).filter(function (t) { return t > tMin && t < tMax; })).concat([tMax]);
+      exp = times.map(function (t) { return { t: t, v: expectedAt(t) }; });
+    }
+    var vals = pts.map(function (p) { return p.total; }).concat(exp ? exp.map(function (e) { return e.v; }) : []);
+    var yt = niceTicks(Math.min.apply(null, vals), Math.max.apply(null, vals), 4), yLo = yt[0], yHi = yt[yt.length - 1];
+    var svg = el("svg", { viewBox: "0 0 " + W + " " + H, role: "img", tabindex: "0", "aria-label": "Line chart of total online signatures over time" }, host);
+    function Y(v) { return m.t + (1 - (v - yLo) / (yHi - yLo)) * (H - m.t - m.b); }
+    drawYGrid(svg, W, m, Y, yt);
+    var X = drawTimeAxis(svg, W, H, m, tMin, tMax);
 
     var d = pts.map(function (p, i) { return (i ? "L" : "M") + X(p.t).toFixed(1) + " " + Y(p.total).toFixed(1); }).join(" ");
-    el("path", { d: d + " L" + X(tMax).toFixed(1) + " " + (H - m.b) + " L" + X(tMin).toFixed(1) + " " + (H - m.b) + " Z", fill: "var(--series-1)", "fill-opacity": 0.10 }, svg);
-    // consecutive segments of the same style are drawn as one path; dashed when either end is estimated
-    var runs = [], cur = null;
-    for (var si = 1; si < pts.length; si++) {
-      var est = pts[si - 1].est || pts[si].est;
-      if (!cur || cur.est !== est) { cur = { est: est, d: "M" + X(pts[si - 1].t).toFixed(1) + " " + Y(pts[si - 1].total).toFixed(1) }; runs.push(cur); }
-      cur.d += " L" + X(pts[si].t).toFixed(1) + " " + Y(pts[si].total).toFixed(1);
+    el("path", { d: d + " L" + X(tMax).toFixed(1) + " " + (H - m.b) + " L" + X(tMin).toFixed(1) + " " + (H - m.b) + " Z", fill: "var(--c1)", "fill-opacity": 0.10 }, svg);
+    if (exp) {
+      el("path", { d: exp.map(function (e, i) { return (i ? "L" : "M") + X(e.t).toFixed(1) + " " + Y(e.v).toFixed(1); }).join(" "), fill: "none", stroke: "var(--c2)", "stroke-width": 2, "stroke-linejoin": "round", "stroke-linecap": "round" }, svg);
     }
     var hasEst = false;
-    runs.forEach(function (r) {
+    runsOf(pts, X, Y, function (p) { return p.total; }).forEach(function (r) {
       if (r.est) hasEst = true;
-      var a = { d: r.d, fill: "none", stroke: "var(--series-1)", "stroke-width": 2, "stroke-linejoin": "round", "stroke-linecap": "round" };
-      if (r.est) { a["stroke-dasharray"] = "5 4"; }
+      var a = { d: r.d, fill: "none", stroke: "var(--c1)", "stroke-width": 2, "stroke-linejoin": "round", "stroke-linecap": "round" };
+      if (r.est) a["stroke-dasharray"] = "5 4";
       el("path", a, svg);
     });
-    var legend = document.getElementById("est-note"); if (legend) legend.style.display = hasEst ? "block" : "none";
+    document.getElementById("est-note").style.display = hasEst ? "block" : "none";
 
-    var last = pts[pts.length - 1];
-    el("circle", { cx: X(last.t), cy: Y(last.total), r: 4, fill: "var(--series-1)", stroke: "var(--surface-1)", "stroke-width": 2 }, svg);
-    var lab = el("text", { x: X(last.t) + 10, y: Y(last.total) + 4, "font-size": 12, "font-weight": 600, fill: "var(--text-primary)" }, svg);
-    lab.textContent = nf.format(last.total);
-    // keep end label inside the chart
-    lab.setAttribute("x", Math.min(X(last.t) + 10, W - 4)); if (X(last.t) + 10 + 52 > W) lab.setAttribute("text-anchor", "end"), lab.setAttribute("x", X(last.t) - 10), lab.setAttribute("y", Y(last.total) - 10);
+    if (exp) {
+      legendItem(legend, function (s) { el("line", { x1: 0, x2: 22, y1: 5, y2: 5, stroke: "var(--c1)", "stroke-width": 2 }, s); }, "Actual signatures");
+      legendItem(legend, function (s) { el("line", { x1: 0, x2: 22, y1: 5, y2: 5, stroke: "var(--c2)", "stroke-width": 2 }, s); }, "Expected, communications strategy");
+    }
 
-    // hover layer
+    // end labels
+    var last = pts[pts.length - 1], yA = Y(last.total);
+    el("circle", { cx: X(last.t), cy: yA, r: 4, fill: "var(--c1)", stroke: "var(--surface-1)", "stroke-width": 2 }, svg);
+    var labA = el("text", { x: X(last.t) + 10, y: yA + 4, "font-size": 12, "font-weight": 600, fill: "var(--text-primary)" }, svg);
+    labA.textContent = nf.format(last.total);
+    if (exp) {
+      var ev = exp[exp.length - 1].v, yE = Y(ev);
+      el("circle", { cx: X(tMax), cy: yE, r: 4, fill: "var(--c2)", stroke: "var(--surface-1)", "stroke-width": 2 }, svg);
+      var yl = yE + 4;
+      if (Math.abs(yE - yA) < 15) { yl = ev <= last.total ? yA + 19 : yA - 11; labA.setAttribute("y", ev <= last.total ? yA + 4 : yA + 4); }
+      var labE = el("text", { x: X(tMax) + 10, y: yl, "font-size": 12, fill: "var(--text-secondary)" }, svg);
+      labE.textContent = nf.format(Math.round(ev));
+    }
+
+    // hover
     var cross = el("line", { y1: m.t, y2: H - m.b, stroke: "var(--text-muted)", "stroke-width": 1, visibility: "hidden" }, svg);
-    var dot = el("circle", { r: 4, fill: "var(--series-1)", stroke: "var(--surface-1)", "stroke-width": 2, visibility: "hidden" }, svg);
-    var tip = document.createElement("div"); tip.className = "tip"; host.appendChild(tip);
-    var idx = pts.length - 1;
+    var dot = el("circle", { r: 4, fill: "var(--c1)", stroke: "var(--surface-1)", "stroke-width": 2, visibility: "hidden" }, svg);
+    var tip = div("tip", null, host), idx = pts.length - 1;
     function show(i) {
       idx = Math.max(0, Math.min(pts.length - 1, i));
       var p = pts[idx], x = X(p.t), y = Y(p.total);
       cross.setAttribute("x1", x); cross.setAttribute("x2", x); cross.setAttribute("visibility", "visible");
       dot.setAttribute("cx", x); dot.setAttribute("cy", y); dot.setAttribute("visibility", "visible");
       tip.textContent = "";
-      var l1 = document.createElement("div"); l1.textContent = fmtFull(p.t) + (p.est ? " (estimated)" : "");
-      var l2 = document.createElement("div"); var key = document.createElement("span"); key.className = "key";
-      var v = document.createElement("span"); v.className = "v"; v.textContent = nf.format(p.total);
-      l2.appendChild(key); l2.appendChild(v);
-      tip.appendChild(l1); tip.appendChild(l2);
-      if (idx > 0) { var l3 = document.createElement("div"); var g = p.total - pts[idx - 1].total; l3.textContent = (g >= 0 ? "+" : "") + nf.format(g) + " since previous update"; tip.appendChild(l3); }
-      tip.style.display = "block";
-      var scale = host.clientWidth / W, tw = tip.offsetWidth;
-      var left = x * scale + 12; if (left + tw > host.clientWidth) left = x * scale - tw - 12;
-      tip.style.left = Math.max(0, left) + "px"; tip.style.top = Math.max(0, y * scale - 20) + "px";
+      div(null, periodLabel(p.t) + (p.est ? " (estimated)" : ""), tip);
+      if (state.gran !== "hour") div("mut", "As of " + fmtFull(p.t), tip);
+      var r2 = div("row", null, tip); var key = div("key", null, r2); key.style.background = "var(--c1)";
+      var v = div("v", nf.format(p.total), r2);
+      if (idx > 0) { var g = p.total - pts[idx - 1].total; div(null, (g >= 0 ? "+" : "") + nf.format(g) + " since previous " + (state.gran === "hour" ? "update" : state.gran === "day" ? "day" : state.gran === "week" ? "week" : "month"), tip); }
+      if (exp) {
+        var e = expectedAt(p.t), r3 = div("row", null, tip); var k3 = div("key", null, r3); k3.style.background = "var(--c2)";
+        div(null, "Expected: " + nf.format(Math.round(e)), r3);
+        div(null, e > 0 ? pct(p.total / e * 100) + " of expected" : "Expected value is 0", tip);
+      }
+      tip.style.display = "block"; placeTip(tip, host, svg, W, x, y);
     }
     function hide() { cross.setAttribute("visibility", "hidden"); dot.setAttribute("visibility", "hidden"); tip.style.display = "none"; }
     svg.addEventListener("pointermove", function (ev) {
@@ -363,74 +570,238 @@
     });
   }
 
-  // ---------- bar chart ----------
-  function renderBars() {
-    var host = document.getElementById("bar-chart");
-    host.textContent = "";
-    if (!countries.length) { var e = document.createElement("div"); e.className = "empty"; e.textContent = "No country data yet."; host.appendChild(e); return; }
-    var W = Math.max(host.clientWidth, 300), rowH = 28, bar = 16, m = { l: 96, r: 56, t: 4, b: 4 };
-    var H = m.t + m.b + rowH * countries.length;
-    var svg = el("svg", { viewBox: "0 0 " + W + " " + H, role: "img", "aria-label": "Bar chart of online signatures by country" }, host);
-    var max = countries[0].total || 1, total = countries.reduce(function (s, c) { return s + c.total; }, 0);
-    var plotW = W - m.l - m.r;
-    el("line", { x1: m.l, x2: m.l, y1: m.t, y2: H - m.b, stroke: "var(--baseline)", "stroke-width": 1 }, svg);
-    var tip = document.createElement("div"); tip.className = "tip"; host.appendChild(tip);
+  /* ---------- chart 2: countries over time ---------- */
+  function buildChips() {
+    var host = document.getElementById("chips"); host.textContent = "";
+    var mk = function (label, fn) {
+      var b = document.createElement("button"); b.className = "mini"; b.textContent = label; b.addEventListener("click", fn); host.appendChild(b);
+    };
+    mk("All", function () { CODES.forEach(function (c) { state.sel[c] = true; }); syncChips(); renderCountries(); });
+    mk("None", function () { CODES.forEach(function (c) { state.sel[c] = false; }); syncChips(); renderCountries(); });
+    div("sep", null, host);
+    CODES.forEach(function (c) {
+      var b = document.createElement("button"); b.className = "chip"; b.setAttribute("data-c", c); b.setAttribute("aria-pressed", "true");
+      var s = el("svg", { width: 22, height: 8, viewBox: "0 0 22 8" }, b);
+      var a = { x1: 0, x2: 22, y1: 4, y2: 4, stroke: STYLE[c].color, "stroke-width": 2 }; if (STYLE[c].dash) a["stroke-dasharray"] = STYLE[c].dash;
+      el("line", a, s);
+      var t = document.createElement("span"); t.textContent = NAMES[c]; b.appendChild(t);
+      b.addEventListener("click", function () { state.sel[c] = !state.sel[c]; syncChips(); renderCountries(); });
+      host.appendChild(b);
+    });
+  }
+  function syncChips() {
+    Array.prototype.forEach.call(document.querySelectorAll("#chips .chip"), function (b) {
+      b.setAttribute("aria-pressed", state.sel[b.getAttribute("data-c")] ? "true" : "false");
+    });
+  }
+  function renderCountries() {
+    var host = document.getElementById("country-chart"); host.textContent = "";
+    var sp = bucketed(inRange(snaps));
+    var sel = CODES.filter(function (c) { return state.sel[c]; });
+    var note = document.getElementById("cest-note");
+    if (sp.length < 2) { message(host, snaps.length < 2 ? "The curves build up as data is collected, one point per hour." : "Not enough data for this time range and breakdown yet."); note.style.display = "none"; return; }
+    if (!sel.length) { message(host, "Select at least one country."); note.style.display = "none"; return; }
+    var W = Math.max(host.clientWidth, 300), H = W < 520 ? 280 : 340, labels = sel.length <= 4;
+    var m = { l: 52, r: labels ? 130 : 24, t: 14, b: 30 };
+    var tMin = sp[0].t, tMax = sp[sp.length - 1].t, ymax = 0;
+    sp.forEach(function (s) { sel.forEach(function (c) { if ((s.by[c] || 0) > ymax) ymax = s.by[c]; }); });
+    var yt = niceTicks(0, ymax || 1, 4), yHi = yt[yt.length - 1];
+    var svg = el("svg", { viewBox: "0 0 " + W + " " + H, role: "img", tabindex: "0", "aria-label": "Line chart of online signatures per country over time" }, host);
+    function Y(v) { return m.t + (1 - v / yHi) * (H - m.t - m.b); }
+    drawYGrid(svg, W, m, Y, yt);
+    var X = drawTimeAxis(svg, W, H, m, tMin, tMax);
+    var hasEst = false, groups = {};
+    sel.forEach(function (c) {
+      var g = el("g", { "data-c": c }, svg); groups[c] = g;
+      runsOf(sp, X, Y, function (s) { return s.by[c] || 0; }).forEach(function (r) {
+        if (r.est) hasEst = true;
+        var a = { d: r.d, fill: "none", stroke: STYLE[c].color, "stroke-width": 2, "stroke-linejoin": "round", "stroke-linecap": "round", "stroke-opacity": r.est ? 0.45 : 1 };
+        if (STYLE[c].dash) a["stroke-dasharray"] = STYLE[c].dash;
+        el("path", a, g);
+      });
+    });
+    note.style.display = hasEst ? "block" : "none";
+    if (labels) {
+      var items = sel.map(function (c) { return { c: c, y: Y(sp[sp.length - 1].by[c] || 0) }; }).sort(function (a, b) { return a.y - b.y; });
+      for (var i = 1; i < items.length; i++) if (items[i].y - items[i - 1].y < 14) items[i].y = items[i - 1].y + 14;
+      items.forEach(function (it) {
+        var t = el("text", { x: X(tMax) + 8, y: it.y + 4, "font-size": 12, fill: "var(--text-secondary)" }, svg);
+        t.textContent = NAMES[it.c] + " " + nf.format(sp[sp.length - 1].by[it.c] || 0);
+      });
+    }
 
-    countries.forEach(function (c, i) {
-      var y = m.t + i * rowH, cy = y + rowH / 2, w = Math.max(c.total / max * plotW, c.total > 0 ? 4 : 0);
+    var cross = el("line", { y1: m.t, y2: H - m.b, stroke: "var(--text-muted)", "stroke-width": 1, visibility: "hidden" }, svg);
+    var dot = el("circle", { r: 4, stroke: "var(--surface-1)", "stroke-width": 2, visibility: "hidden" }, svg);
+    var tip = div("tip", null, host), idx = sp.length - 1;
+    function reset() { sel.forEach(function (c) { groups[c].setAttribute("opacity", 1); }); }
+    function show(i, py) {
+      idx = Math.max(0, Math.min(sp.length - 1, i));
+      var s = sp[idx], x = X(s.t), hi = null, bd = Infinity;
+      sel.forEach(function (c) { var dd = Math.abs(Y(s.by[c] || 0) - (py == null ? -1e9 : py)); if (dd < bd) { bd = dd; hi = c; } });
+      if (py == null) hi = sel.slice().sort(function (a, b) { return (s.by[b] || 0) - (s.by[a] || 0); })[0];
+      sel.forEach(function (c) { groups[c].setAttribute("opacity", c === hi ? 1 : 0.25); });
+      cross.setAttribute("x1", x); cross.setAttribute("x2", x); cross.setAttribute("visibility", "visible");
+      dot.setAttribute("cx", x); dot.setAttribute("cy", Y(s.by[hi] || 0)); dot.setAttribute("fill", STYLE[hi].color); dot.setAttribute("visibility", "visible");
+      tip.textContent = "";
+      div(null, periodLabel(s.t) + (s.est ? " (estimated)" : ""), tip);
+      if (state.gran !== "hour") div("mut", "As of " + fmtFull(s.t), tip);
+      var order = sel.slice().sort(function (a, b) { return (s.by[b] || 0) - (s.by[a] || 0); }), maxRows = 12;
+      order.slice(0, maxRows).forEach(function (c) {
+        var r = div("row" + (c === hi ? " hi" : ""), null, tip);
+        var k = el("svg", { width: 14, height: 6, viewBox: "0 0 14 6" }, r);
+        var a = { x1: 0, x2: 14, y1: 3, y2: 3, stroke: STYLE[c].color, "stroke-width": 2 }; if (STYLE[c].dash) a["stroke-dasharray"] = STYLE[c].dash; el("line", a, k);
+        div("n", NAMES[c], r); div(null, nf.format(s.by[c] || 0), r);
+      });
+      if (order.length > maxRows) div("mut", "and " + (order.length - maxRows) + " more", tip);
+      tip.style.display = "block"; placeTip(tip, host, svg, W, x, py == null ? Y(s.by[hi] || 0) : py);
+    }
+    function hide() { cross.setAttribute("visibility", "hidden"); dot.setAttribute("visibility", "hidden"); tip.style.display = "none"; reset(); }
+    svg.addEventListener("pointermove", function (ev) {
+      var r = svg.getBoundingClientRect(), x = (ev.clientX - r.left) * (W / r.width), y = (ev.clientY - r.top) * (W / r.width), best = 0, bd = Infinity;
+      sp.forEach(function (s, i) { var dd = Math.abs(X(s.t) - x); if (dd < bd) { bd = dd; best = i; } });
+      show(best, y);
+    });
+    svg.addEventListener("pointerleave", hide);
+    svg.addEventListener("blur", hide);
+    svg.addEventListener("keydown", function (ev) {
+      if (ev.key === "ArrowLeft") { show(idx - 1, null); ev.preventDefault(); }
+      if (ev.key === "ArrowRight") { show(idx + 1, null); ev.preventDefault(); }
+    });
+  }
+
+  /* ---------- chart 3: bars by country ---------- */
+  function renderBars() {
+    var host = document.getElementById("bar-chart"), legend = document.getElementById("bar-legend");
+    host.textContent = ""; legend.textContent = "";
+    if (!countries.length) { message(host, "No country data yet."); return; }
+    var useRel = state.rel && (state.thr || state.tgt);
+    document.getElementById("scale-group").style.display = (state.thr || state.tgt) ? "flex" : "none";
+    document.getElementById("scale-note").style.display = useRel ? "block" : "none";
+
+    var total = countries.reduce(function (s, c) { return s + c.total; }, 0);
+    var rows = countries.map(function (c) {
+      var refs = [];
+      if (state.thr && thrOf(c.code) != null) refs.push({ k: "thr", v: thrOf(c.code) });
+      if (state.tgt && tgtOf(c.code) != null) refs.push({ k: "tgt", v: tgtOf(c.code) });
+      refs.sort(function (a, b) { return a.v - b.v; });
+      var maxRef = refs.length ? refs[refs.length - 1].v : 0;
+      return { c: c, refs: refs, maxRef: maxRef, ext: Math.max(c.total, maxRef), prog: maxRef ? c.total / maxRef : 0 };
+    });
+    if (useRel) rows.sort(function (a, b) { return b.prog - a.prog; });
+    var absMax = rows.reduce(function (m, r) { return Math.max(m, r.ext); }, 1);
+
+    var W = Math.max(host.clientWidth, 300), rowH = 28, bar = 16, m = { l: 96, r: 64, t: 4, b: 4 };
+    var H = m.t + m.b + rowH * rows.length, plotW = W - m.l - m.r;
+    var svg = el("svg", { viewBox: "0 0 " + W + " " + H, role: "img", "aria-label": "Bar chart of online signatures by country" }, host);
+    el("line", { x1: m.l, x2: m.l, y1: m.t, y2: H - m.b, stroke: "var(--baseline)", "stroke-width": 1 }, svg);
+    var tip = div("tip", null, host);
+
+    function roundedEnd(x0, y0, w, h, r) {
+      r = Math.min(r, w);
+      return "M" + x0 + " " + y0 + " H" + (x0 + w - r) + " Q" + (x0 + w) + " " + y0 + " " + (x0 + w) + " " + (y0 + r) +
+        " V" + (y0 + h - r) + " Q" + (x0 + w) + " " + (y0 + h) + " " + (x0 + w - r) + " " + (y0 + h) + " H" + x0 + " Z";
+    }
+    var COLORS = { thr: "var(--c2)", tgt: "var(--c3)" }, SHADES = ["var(--shade1)", "var(--shade2)", "var(--shade3)"];
+
+    rows.forEach(function (r, i) {
+      var c = r.c, y = m.t + i * rowH, cy = y + rowH / 2, y0 = cy - bar / 2;
+      var scale = (useRel ? plotW / (r.ext || 1) : plotW / absMax);
       var name = el("text", { x: m.l - 10, y: cy + 4, "text-anchor": "end", "font-size": 13, fill: "var(--text-secondary)" }, svg);
       name.textContent = c.name;
-      var r = Math.min(4, w), x0 = m.l, y0 = cy - bar / 2;
-      var path = el("path", {
-        d: "M" + x0 + " " + y0 + " H" + (x0 + w - r) + " Q" + (x0 + w) + " " + y0 + " " + (x0 + w) + " " + (y0 + r) +
-           " V" + (y0 + bar - r) + " Q" + (x0 + w) + " " + (y0 + bar) + " " + (x0 + w - r) + " " + (y0 + bar) + " H" + x0 + " Z",
-        fill: "var(--series-1)"
-      }, svg);
-      var val = el("text", { x: m.l + w + 8, y: cy + 4, "font-size": 12, "font-weight": 600, fill: "var(--text-primary)" }, svg);
+      var g = el("g", {}, svg), fills = [];
+      // filled segments, a darker shade for each goal that has been passed
+      var cuts = r.refs.filter(function (q) { return q.v < c.total; }).map(function (q) { return q.v; });
+      var b = [0].concat(cuts, [c.total]);
+      for (var s = 0; s < b.length - 1; s++) {
+        var xa = b[s] * scale, xb = b[s + 1] * scale, last = s === b.length - 2;
+        var x0 = m.l + xa + (s > 0 ? 1 : 0), w = Math.max(xb - xa - (s > 0 ? 1 : 0) - (last ? 0 : 1), last ? 3 : 0);
+        if (w <= 0) continue;
+        var seg = last ? el("path", { d: roundedEnd(x0, y0, w, bar, 4), fill: SHADES[Math.min(s, 2)] }, g) : el("rect", { x: x0, y: y0, width: w, height: bar, fill: SHADES[Math.min(s, 2)] }, g);
+        fills.push(seg);
+      }
+      // outline bars for the part still missing
+      var start = c.total;
+      r.refs.forEach(function (q) {
+        if (q.v <= start) return;
+        var x0 = m.l + start * scale + (start === c.total && c.total > 0 ? 2 : 1), w = (q.v - start) * scale - (start === c.total && c.total > 0 ? 3 : 2);
+        if (w > 2) el("rect", { x: x0 + 1, y: y0 + 1, width: w - 2, height: bar - 2, rx: 3, fill: "none", stroke: COLORS[q.k], "stroke-width": 2 }, g);
+        start = q.v;
+      });
+      var val = el("text", { x: m.l + r.ext * scale + 8, y: cy + 4, "font-size": 12, "font-weight": 600, fill: "var(--text-primary)" }, svg);
       val.textContent = nf.format(c.total);
       var hit = el("rect", { x: 0, y: y, width: W, height: rowH, fill: "transparent", tabindex: "0", "aria-label": c.name + ": " + nf.format(c.total) + " signatures" }, svg);
       function on() {
-        path.setAttribute("fill", "var(--series-1-hover)");
+        fills.forEach(function (f) { f.setAttribute("opacity", 0.8); });
         tip.textContent = "";
-        var a = document.createElement("div"); a.textContent = c.name;
-        var b = document.createElement("div"); b.className = "v"; b.textContent = nf.format(c.total);
-        var s = document.createElement("div"); s.textContent = (total ? (c.total / total * 100).toFixed(1) : "0.0") + "% of all online signatures";
-        tip.appendChild(a); tip.appendChild(b); tip.appendChild(s);
+        div(null, c.name, tip); div("v", nf.format(c.total), tip);
+        div(null, (total ? pct(c.total / total * 100) : "0.0%") + " of all online signatures", tip);
+        if (state.thr && thrOf(c.code) != null) div(null, pct(c.total / thrOf(c.code) * 100) + " of threshold, " + nf.format(thrOf(c.code)), tip);
+        if (state.tgt && tgtOf(c.code) != null) div(null, pct(c.total / tgtOf(c.code) * 100) + " of target, " + nf.format(tgtOf(c.code)), tip);
         tip.style.display = "block";
-        var scale = host.clientWidth / W, tw = tip.offsetWidth;
-        var left = (m.l + w) * scale + 70; if (left + tw > host.clientWidth) left = Math.max(0, (m.l + w) * scale - tw - 12);
-        tip.style.left = left + "px"; tip.style.top = Math.max(0, cy * scale - 30) + "px";
+        var scaleW = svg.getBoundingClientRect().width / W, tw = tip.offsetWidth;
+        var left = (m.l + r.ext * scale) * scaleW + 80; if (left + tw > host.clientWidth) left = Math.max(0, (m.l + r.ext * scale) * scaleW - tw - 12);
+        tip.style.left = left + "px"; tip.style.top = Math.max(0, cy * scaleW - 30) + "px";
       }
-      function off() { path.setAttribute("fill", "var(--series-1)"); tip.style.display = "none"; }
+      function off() { fills.forEach(function (f) { f.setAttribute("opacity", 1); }); tip.style.display = "none"; }
       hit.addEventListener("pointerenter", on); hit.addEventListener("pointermove", on); hit.addEventListener("pointerleave", off);
       hit.addEventListener("focus", on); hit.addEventListener("blur", off);
     });
 
-    // table view
+    // legend
+    if (state.thr || state.tgt) {
+      legendItem(legend, function (s) { el("rect", { x: 0, y: 1, width: 22, height: 8, rx: 2, fill: SHADES[0] }, s); }, "Collected");
+      if (state.thr) legendItem(legend, function (s) { el("rect", { x: 1, y: 2, width: 20, height: 6, rx: 2, fill: "none", stroke: COLORS.thr, "stroke-width": 2 }, s); }, "Missing to threshold");
+      if (state.tgt) legendItem(legend, function (s) { el("rect", { x: 1, y: 2, width: 20, height: 6, rx: 2, fill: "none", stroke: COLORS.tgt, "stroke-width": 2 }, s); }, "Missing to target");
+      legendItem(legend, function (s) { el("rect", { x: 0, y: 1, width: 10, height: 8, fill: SHADES[1] }, s); el("rect", { x: 12, y: 1, width: 10, height: 8, fill: SHADES[2] }, s); }, "Darker: part above a goal");
+    }
+
+    // table
     var tb = document.getElementById("country-table"); tb.textContent = "";
-    var thead = document.createElement("tr");
-    ["Country", "Signatures", "Share"].forEach(function (h, i) { var th = document.createElement("th"); th.textContent = h; if (i) th.className = "num"; thead.appendChild(th); });
-    tb.appendChild(thead);
+    var head = document.createElement("tr");
+    ["Country", "Signatures", "Share", "Threshold", "% of threshold", "Target", "% of target"].forEach(function (h, i) {
+      var th = document.createElement("th"); th.textContent = h; if (i) th.className = "num"; head.appendChild(th);
+    });
+    tb.appendChild(head);
     countries.forEach(function (c) {
+      var th = thrOf(c.code), tg = tgtOf(c.code);
+      var cells = [c.name, nf.format(c.total), total ? pct(c.total / total * 100) : "0.0%",
+        th != null ? nf.format(th) : "n/a", th ? pct(c.total / th * 100) : "n/a",
+        tg != null ? nf.format(tg) : "n/a", tg ? pct(c.total / tg * 100) : "n/a"];
       var tr = document.createElement("tr");
-      [c.name, nf.format(c.total), (total ? (c.total / total * 100).toFixed(1) : "0.0") + "%"].forEach(function (v, i) { var td = document.createElement("td"); td.textContent = v; if (i) td.className = "num"; tr.appendChild(td); });
+      cells.forEach(function (v, i) { var td = document.createElement("td"); td.textContent = v; if (i) td.className = "num"; tr.appendChild(td); });
       tb.appendChild(tr);
     });
+    var tr = document.createElement("tr"); tr.className = "total";
+    ["All countries", nf.format(total), "100.0%", "", "", nf.format(TARGET_TOTAL), pct(total / TARGET_TOTAL * 100)].forEach(function (v, i) {
+      var td = document.createElement("td"); td.textContent = v; if (i) td.className = "num"; tr.appendChild(td);
+    });
+    tb.appendChild(tr);
   }
 
-  // ---------- wiring ----------
-  function renderAll() { renderHero(); renderLine(); renderBars(); }
-  document.getElementById("range").addEventListener("click", function (ev) {
-    var b = ev.target.closest("button"); if (!b) return;
-    rangeHours = +b.getAttribute("data-h");
-    Array.prototype.forEach.call(this.querySelectorAll("button"), function (x) { x.setAttribute("aria-pressed", x === b ? "true" : "false"); });
-    renderLine();
-  });
-  var timer; window.addEventListener("resize", function () { clearTimeout(timer); timer = setTimeout(function () { renderLine(); renderBars(); }, 120); });
+  /* ---------- wiring ---------- */
+  function renderTime() { renderLine(); renderCountries(); }
+  function renderAll() { renderHero(); renderTime(); renderBars(); }
+  function seg(id, fn) {
+    document.getElementById(id).addEventListener("click", function (ev) {
+      var b = ev.target.closest("button"); if (!b) return;
+      Array.prototype.forEach.call(this.querySelectorAll("button"), function (x) { x.setAttribute("aria-pressed", x === b ? "true" : "false"); });
+      fn(b.getAttribute("data-v"));
+    });
+  }
+  seg("range", function (v) { state.range = +v; renderTime(); });
+  seg("gran", function (v) { state.gran = v; renderTime(); });
+  seg("scale", function (v) { state.rel = v === "rel"; renderBars(); });
+  document.getElementById("exp").addEventListener("change", function () { state.expected = this.checked; renderLine(); });
+  document.getElementById("thr").addEventListener("change", function () { state.thr = this.checked; renderBars(); });
+  document.getElementById("tgt").addEventListener("change", function () { state.tgt = this.checked; renderBars(); });
+  var timer; window.addEventListener("resize", function () { clearTimeout(timer); timer = setTimeout(function () { renderTime(); renderBars(); }, 120); });
+
+  document.getElementById("voters-total").textContent = (VOTERS_TOTAL / 1e6).toFixed(1);
+  buildChips();
   load().then(renderAll).catch(function (err) {
     document.getElementById("hero").textContent = "No data";
-    var m = document.getElementById("hero-meta"); m.className = "hero-meta err";
-    m.textContent = "The data files could not be loaded (" + err.message + "). If you opened this page directly from your computer, publish it via GitHub Pages instead.";
+    var mm = document.getElementById("hero-meta"); mm.className = "hero-meta err";
+    mm.textContent = "The data files could not be loaded (" + err.message + "). If you opened this page directly from your computer, publish it via GitHub Pages instead.";
   });
 })();
 </script>
