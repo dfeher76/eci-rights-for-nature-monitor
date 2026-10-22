@@ -194,7 +194,7 @@
       <summary>Show as table</summary>
       <div class="tablewrap"><table id="country-table"></table></div>
     </details>
-    <p class="foot"><sup>1</sup> Threshold: the minimum number of statements of support required in each member state, as published by the European Commission in the register of the initiative.</p>
+    <p class="foot"><sup>1</sup> Threshold: the minimum number of statements of support required in each member state. It equals the number of Members of the European Parliament elected in that member state, multiplied by the total number of Members of the European Parliament, 720. The figures are those the European Commission publishes for initiatives registered on or after 16 July 2024, see the <a href="https://citizens-initiative.europa.eu/thresholds_en">official thresholds page</a>.</p>
     <p class="foot"><sup>2</sup> Target: 1,100,000 divided by the total number of people with voting rights in the European Parliament elections in the EU, multiplied by the number of such people in the respective country. This spreads the campaign goal of 1.1 million signatures in proportion to the electorate. The figures are the numbers of people eligible to vote in the 2024 European Parliament elections from the official <a href="https://ec.europa.eu/eurostat/databrowser/view/demo_popep/default/table?lang=en">Eurostat table demo_popep</a>, last updated on 2 August 2024, about <span id="voters-total">358</span> million in total. Total population would be used where these figures are not available, which is not the case for any member state. For Germany, Eurostat counts about 61.9 million, while the national authority states up to 64.9 million because it also includes EU citizens who still have to register to vote.</p>
     <p class="foot" id="scale-note" style="display:none">In the relative view, each bar is as long as the larger of its goals, so the filled part shows the progress towards the goal. Use the absolute view to compare the numbers between countries.</p>
   </section>
@@ -213,14 +213,14 @@
 
   /* ===================== REFERENCE DATA ===================== */
   var NAMES = {AT:"Austria",BE:"Belgium",BG:"Bulgaria",HR:"Croatia",CY:"Cyprus",CZ:"Czechia",DK:"Denmark",EE:"Estonia",FI:"Finland",FR:"France",DE:"Germany",GR:"Greece",HU:"Hungary",IE:"Ireland",IT:"Italy",LV:"Latvia",LT:"Lithuania",LU:"Luxembourg",MT:"Malta",NL:"Netherlands",PL:"Poland",PT:"Portugal",RO:"Romania",SK:"Slovakia",SI:"Slovenia",ES:"Spain",SE:"Sweden"};
-  // code: [national threshold (EC register), people eligible to vote in the 2024 EP elections (Eurostat demo_popep)]
+  // code: [national threshold (EC thresholds page, initiatives registered on or after 16/07/2024: MEPs of the country x 720),people eligible to vote in the 2024 EP elections (Eurostat demo_popep)]
   var REF = {
-    AT:[13395,6372204], BE:[14805,8537902], BG:[11985,6138178], HR:[8460,3734780], CY:[4230,684893],
-    CZ:[14805,8448475], DK:[9870,4525302], EE:[4935,980010], FI:[9870,4546589], FR:[55695,50693220],
-    DE:[67680,61941751], GR:[14805,9809353], HU:[14805,7803555], IE:[9165,3558051], IT:[53580,47340098],
-    LV:[5640,1541102], LT:[7755,2819567], LU:[4230,489669], MT:[4230,370184], NL:[20445,13542363],
-    PL:[36660,32148844], PT:[14805,10830572], RO:[23265,18976027], SK:[9870,4390400], SI:[5640,1689465],
-    ES:[41595,38050286], SE:[14805,7942272]
+    AT:[14400,6372204], BE:[15840,8537902], BG:[12240,6138178], HR:[8640,3734780], CY:[4320,684893],
+    CZ:[15120,8448475], DK:[10800,4525302], EE:[5040,980010], FI:[10800,4546589], FR:[58320,50693220],
+    DE:[69120,61941751], GR:[15120,9809353], HU:[15120,7803555], IE:[10080,3558051], IT:[54720,47340098],
+    LV:[6480,1541102], LT:[7920,2819567], LU:[4320,489669], MT:[4320,370184], NL:[22320,13542363],
+    PL:[38160,32148844], PT:[15120,10830572], RO:[23760,18976027], SK:[10800,4390400], SI:[6480,1689465],
+    ES:[43920,38050286], SE:[15120,7942272]
   };
   var TARGET_TOTAL = 1100000;
   // expected cumulative online signatures (Phase B communications strategy, month ends at 00:00 on the 13th)
